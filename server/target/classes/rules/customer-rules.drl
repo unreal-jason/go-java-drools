@@ -1,0 +1,54 @@
+package rules
+
+import java.util.Map
+
+// 基础测试规则 - 总是执行
+rule "TestRule"
+    when
+        $map : Map()
+    then
+        $map.put("testResult", "规则引擎工作正常");
+        $map.put("status", "success");
+end
+
+// VIP客户折扣规则
+rule "VIPDiscountRule"
+    when
+        $map : Map( get("customerType") == "VIP" )
+    then
+        $map.put("discount", "15%");
+        $map.put("message", "VIP客户享受15%折扣");
+end
+
+// 普通客户折扣规则
+rule "RegularDiscountRule"
+    when
+        $map : Map( get("customerType") == "普通" )
+    then
+        $map.put("discount", "5%");
+        $map.put("message", "普通客户享受5%折扣");
+end
+
+// 新客户礼品规则
+rule "NewCustomerRule"
+    when
+        $map : Map( get("isNewCustomer") == "true" )
+    then
+        $map.put("welcomeGift", "true");
+        $map.put("giftValue", "50");
+        $map.put("message", "新客户赠送价值50元礼品");
+end
+
+// 运费规则
+rule "ShippingRule"
+    when
+        $map : Map( get("zone") != null )
+    then
+        if ("国内".equals($map.get("zone"))) {
+            $map.put("shippingCost", "20");
+            $map.put("message", "国内运费20元");
+        } else if ("国际".equals($map.get("zone"))) {
+            $map.put("shippingCost", "50");
+            $map.put("message", "国际运费50元");
+        };
+end

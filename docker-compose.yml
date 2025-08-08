@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  drools-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    networks:
+      - drools-network
+
+  go-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    depends_on:
+      - drools-server
+    environment:
+      - SERVER_HOST=drools-server
+      - SERVER_PORT=50051
+    networks:
+      - drools-network
+    stdin_open: true
+    tty: true
+
+networks:
+  drools-network:
+    driver: bridge

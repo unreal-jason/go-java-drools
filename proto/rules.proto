@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package drools;
+
+option go_package = "drools-demo/proto";
+
+// 规则引擎请求
+message RuleRequest {
+  string session_id = 1;
+  map<string, string> facts = 2;
+}
+
+// 规则引擎响应
+message RuleResponse {
+  bool success = 1;
+  map<string, string> results = 2;
+  repeated string messages = 3;
+}
+
+// 规则定义
+message RuleDefinition {
+  string rule_name = 1;
+  string rule_content = 2;
+  int32 priority = 3;
+}
+
+// 添加规则请求
+message AddRuleRequest {
+  RuleDefinition rule = 1;
+}
+
+// 添加规则响应
+message AddRuleResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// 规则引擎服务定义
+service RuleEngineService {
+  // 执行规则
+  rpc ExecuteRule(RuleRequest) returns (RuleResponse);
+  
+  // 添加新规则
+  rpc AddRule(AddRuleRequest) returns (AddRuleResponse);
+  
+  // 批量执行规则
+  rpc ExecuteRules(stream RuleRequest) returns (stream RuleResponse);
+}
